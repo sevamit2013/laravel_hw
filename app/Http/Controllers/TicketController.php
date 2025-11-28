@@ -26,14 +26,17 @@ class TicketController extends Controller
             $data = Ticket::with(['ticket_status', 'priority', 'createdBy'])->select('0_tkt_header.*');
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('title', function($row){
+                    return $row->title;
+                })
                 ->addColumn('status', function($row){
-                    return $row->ticket_status->name;
+                    return $row->ticket_status ? $row->ticket_status->name : '';
                 })
                 ->addColumn('priority', function($row){
-                    return $row->priority->name;
+                    return $row->priority ? $row->priority->name : '';
                 })
                 ->addColumn('created_by', function($row){
-                    return $row->createdBy->name;
+                    return $row->createdBy instanceof \App\Models\User ? $row->createdBy->name : '';
                 })
                 ->addColumn('action', function($row){
                     $btn = '<a href="'.route('tickets.show', $row->tkt_id).'" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">View</a>';
@@ -87,7 +90,7 @@ class TicketController extends Controller
             'type_id' => $request->ticket_type_id,
             'assign_id' => $request->assigned_to,
             'status_id' => TicketStatus::where('name', 'Open')->first()->id,
-            'duedate' => $request->due_date,
+            'due_date' => $request->due_date,
             'created_by' => Auth::id(),
             'modified_by' => Auth::id(),
             'loc_code' => $request->location_id,
@@ -149,7 +152,7 @@ class TicketController extends Controller
             'type_id' => $request->ticket_type_id,
             'assign_id' => $request->assigned_to,
             'status_id' => $request->ticket_status_id,
-            'duedate' => $request->due_date,
+            'due_date' => $request->due_date,
             'loc_code' => $request->location_id,
             'modified_by' => Auth::id(),
             'asset_id' => $request->asset_id,

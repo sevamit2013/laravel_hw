@@ -23,14 +23,17 @@ class AssetController extends Controller
             $data = Asset::with(['category', 'subCategory', 'location', 'user', 'assembly'])->select('0_hw_assets.*');
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('asset_code', function($row){
+                    return $row->asset_code;
+                })
                 ->addColumn('category', function($row){
-                    return $row->category->description;
+                    return $row->category ? $row->category->description : '';
                 })
                 ->addColumn('location', function($row){
-                    return $row->location->location_name;
+                    return $row->location ? $row->location->location_name : '';
                 })
                 ->addColumn('user', function($row){
-                    return $row->user ? $row->user->name : '';
+                    return $row->user instanceof \App\Models\User ? $row->user->name : '';
                 })
                 ->addColumn('assembly', function($row){
                     return $row->assembly ? $row->assembly->assembly_code : '';
@@ -91,10 +94,10 @@ class AssetController extends Controller
 
         Asset::create([
             'asset_code' => $request->asset_code,
-            'asset_description' => $request->description,
+            'description' => $request->description,
             'asset_category_id' => $request->asset_category_id,
-            'sub_category_id' => $request->asset_sub_category_id,
-            'loc_code' => $request->location_id,
+            'asset_sub_category_id' => $request->asset_sub_category_id,
+            'location_id' => $request->location_id,
             'user' => $request->user_id,
             'assembly_id' => $request->assembly_id,
             'manufacturer' => $request->manufacturer,
@@ -159,10 +162,10 @@ class AssetController extends Controller
 
         $asset->update([
             'asset_code' => $request->asset_code,
-            'asset_description' => $request->description,
+            'description' => $request->description,
             'asset_category_id' => $request->asset_category_id,
-            'sub_category_id' => $request->asset_sub_category_id,
-            'loc_code' => $request->location_id,
+            'asset_sub_category_id' => $request->asset_sub_category_id,
+            'location_id' => $request->location_id,
             'user' => $request->user_id,
             'assembly_id' => $request->assembly_id,
             'manufacturer' => $request->manufacturer,

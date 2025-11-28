@@ -18,12 +18,12 @@ class Asset extends Model implements Auditable // Implement Auditable Contract
 
     protected $fillable = [
         'asset_code',
-        'asset_description', // description -> asset_description
-        'asset_category_id', // same
-        'sub_category_id', // asset_sub_category_id -> sub_category_id
-        'loc_code', // location_id -> loc_code
-        'user', // user_id -> user
-        'assembly_id', // same
+        'description',
+        'asset_category_id',
+        'asset_sub_category_id',
+        'location_id',
+        'user',
+        'assembly_id',
         'manufacturer',
         'model',
         'company_serial',
@@ -43,12 +43,12 @@ class Asset extends Model implements Auditable // Implement Auditable Contract
 
     public function subCategory()
     {
-        return $this->belongsTo(AssetSubCategory::class, 'sub_category_id', 'sub_cat_id');
+        return $this->belongsTo(AssetSubCategory::class, 'asset_sub_category_id', 'sub_cat_id');
     }
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'loc_code', 'loc_code');
+        return $this->belongsTo(Location::class, 'location_id', 'loc_code');
     }
 
     public function user()

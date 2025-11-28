@@ -20,11 +20,17 @@ class AssemblyController extends Controller
             $data = Assembly::with(['location', 'user'])->select('0_hw_assembly.*');
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('assembly_code', function($row){
+                    return $row->assembly_code;
+                })
+                ->addColumn('description', function($row){
+                    return $row->description;
+                })
                 ->addColumn('location', function($row){
-                    return $row->location->location_name;
+                    return $row->location ? $row->location->location_name : '';
                 })
                 ->addColumn('user', function($row){
-                    return $row->user ? $row->user->name : '';
+                    return $row->user instanceof \App\Models\User ? $row->user->name : '';
                 })
                 ->addColumn('action', function($row){
                     $btn = '<a href="'.route('assemblies.show', $row->assembly_id).'" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">View</a>';

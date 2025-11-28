@@ -14,9 +14,6 @@ class Ticket extends Model implements Auditable // Implement Auditable Contract
     protected $table = '0_tkt_header';
     protected $primaryKey = 'tkt_id';
 
-    const CREATED_AT = 'created_on';
-    const UPDATED_AT = 'modified_on';
-
     protected $fillable = [
         'title',
         'description',
@@ -28,7 +25,7 @@ class Ticket extends Model implements Auditable // Implement Auditable Contract
         'asset_id',
         'assembly_id',
         'loc_code',
-        'duedate',
+        'due_date',
         'created_by',
         'modified_by',
         'is_closed',
