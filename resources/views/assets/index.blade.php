@@ -16,6 +16,12 @@
                         </x-primary-button>
                     </div>
 
+                    @if (session('success'))
+                        <div class="mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                            <span class="block sm:inline">{{ session('success') }}</span>
+                        </div>
+                    @endif
+
                     <div class="mt-6">
                         <table class="min-w-full divide-y divide-gray-200" id="assets-table">
                             <thead class="bg-gray-50">
@@ -57,27 +63,29 @@
     </div>
 
     @push('scripts')
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script>
             $(document).ready(function() {
-                $('#assets-table').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: '{{ route('assets.index') }}',
-                    columns: [
-                        { data: 'asset_code', name: 'asset_code' },
-                        { data: 'description', name: 'description' },
-                        { data: 'category', name: 'category' },
-                        { data: 'location', name: 'location' },
-                        { data: 'assembly', name: 'assembly' },
-                        { data: 'manufacturer', name: 'manufacturer' },
-                        { data: 'status', name: 'status' },
-                        { data: 'action', name: 'action', orderable: false, searchable: false },
-                    ]
-                });
-            });
+                            $('#assets-table').DataTable({
+                                processing: true,
+                                serverSide: true,
+                                ajax: {
+                                    url: '{{ route('assets.index') }}',
+                                    dataFilter: function(data){
+                                        console.log('Datatables response data:', data);
+                                        return data;
+                                    }
+                                },
+                                columns: [
+                                    { data: 'asset_code', name: 'asset_code' },
+                                    { data: 'description', name: 'description' },
+                                    { data: 'category', name: 'category' },
+                                    { data: 'location', name: 'location' },
+                                    { data: 'assembly', name: 'assembly' },
+                                    { data: 'manufacturer', name: 'manufacturer' },
+                                    { data: 'status', name: 'status' },
+                                    { data: 'action', name: 'action', orderable: false, searchable: false },
+                                ]
+                            });            });
         </script>
     @endpush
 </x-app-layout>

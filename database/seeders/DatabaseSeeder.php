@@ -35,6 +35,8 @@ class DatabaseSeeder extends Seeder
             TicketTypeSeeder::class,
             PrioritySeeder::class,
             LocationSeeder::class,
+            AssetCategorySeeder::class,
+            AssetSubCategorySeeder::class,
         ]);
     }
 }
