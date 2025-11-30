@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable; // Import Auditable Contract
-use OwenIt\Auditing\Auditable as AuditableTrait; // Import Auditable Trait
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Ticket extends Model implements Auditable // Implement Auditable Contract
+class Ticket extends Model implements Auditable
 {
-    use HasFactory, AuditableTrait; // Use Auditable Trait
+    use HasFactory, AuditableTrait;
 
     protected $table = '0_tkt_header';
     protected $primaryKey = 'tkt_id';
@@ -26,12 +26,23 @@ class Ticket extends Model implements Auditable // Implement Auditable Contract
         'assembly_id',
         'loc_code',
         'due_date',
+        'expected_time_hours',
+        'actual_time_hours',
         'created_by',
         'modified_by',
         'is_closed',
         'is_reopen',
         'is_approved',
         'inactive',
+        'unread_count',
+    ];
+
+    protected $casts = [
+        'due_date' => 'date',
+        'is_closed' => 'boolean',
+        'is_reopen' => 'boolean',
+        'is_approved' => 'boolean',
+        'inactive' => 'boolean',
     ];
 
     public function getRouteKeyName()
@@ -81,6 +92,29 @@ class Ticket extends Model implements Auditable // Implement Auditable Contract
 
     public function replies()
     {
-        return $this->hasMany(TicketReply::class);
+        return $this->hasMany(TicketReply::class, 'ticket_id', 'tkt_id')->orderBy('created_at', 'desc');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(TicketAttachment::class, 'ticket_id', 'tkt_id');
+    }
+
+    // Check if ticket is late
+    public function isLate()
+    {
+        return !$this->is_closed && $this->due_date < now();
+    }
+
+    // Increment unread count
+    public function incrementUnreadCount()
+    {
+        $this->increment('unread_count');
+    }
+
+    // Reset unread count
+    public function resetUnreadCount()
+    {
+        $this->update(['unread_count' => 0]);
     }
 }
