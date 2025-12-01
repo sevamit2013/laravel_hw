@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable; // Import Auditable Contract
 use OwenIt\Auditing\Auditable as AuditableTrait; // Import Auditable Trait
@@ -13,6 +14,7 @@ class User extends Authenticatable implements Auditable // Implement Auditable C
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, AuditableTrait; // Use Auditable Trait
+     use HasRoles; // Add this line
     protected $table = '0_users';
 
     /**
@@ -49,10 +51,10 @@ class User extends Authenticatable implements Auditable // Implement Auditable C
         ];
     }
 
-    public function roles()
+    /*public function roles()
     {
         return $this->belongsToMany(Role::class);
-    }
+    }*/
 
     public function hasAnyRole(array $roles)
     {

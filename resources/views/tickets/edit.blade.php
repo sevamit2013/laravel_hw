@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <form action="{{ route('tickets.update', $ticket->id) }}" method="POST">
+                    <form method="POST" action="{{ route('tickets.update', ['tkt_id' => $ticket->tkt_id]) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -95,6 +95,7 @@
                                 {{ __('Update') }}
                             </x-primary-button>
                         </div>
+                    <button type="submit">Update Ticket</button>
                     </form>
                 </div>
             </div>

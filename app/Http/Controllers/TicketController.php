@@ -79,27 +79,27 @@ class TicketController extends Controller
                     return $dueDate;
                 })
                 ->addColumn('action', function($row){
-                    $user = auth()->user();
-                    
-                    $btn = '<a href="'.route('tickets.show', $row->tkt_id).'" class="inline-flex items-center px-3 py-1.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">View</a>';
-                    
-                    if ($user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin']) || $row->created_by == $user->id) {
-                        $btn .= ' <a href="'.route('tickets.edit', $row->tkt_id).'" class="inline-flex items-center px-3 py-1.5 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-2">Edit</a>';
-                    }
-                    
-                    // Add Reply button
-                    $btn .= ' <a href="'.route('tickets.show', $row->tkt_id).'#replies" class="inline-flex items-center px-3 py-1.5 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-2">Reply</a>';
-                    
-                    // Add Reopen button if ticket is closed
-                    if ($row->is_closed && $user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin'])) {
-                        $btn .= ' <form action="'.route('tickets.reopen', $row->tkt_id).'" method="POST" class="inline ml-2">
-                                    '.csrf_field().'
-                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">Reopen</button>
-                                </form>';
-                    }
-                    
-                    return $btn;
-                })
+            $user = auth()->user();
+
+            $btn = '<a href="'.route('tickets.show', $row->tkt_id).'" class="inline-flex items-center px-3 py-1.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">View</a>';
+
+            if ($user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin']) || $row->created_by == $user->id) {
+                $btn .= ' <a href="'.route('tickets.edit', $row->tkt_id).'" class="inline-flex items-center px-3 py-1.5 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-2">Edit</a>';
+            }
+
+            // Add Reply button
+            $btn .= ' <a href="'.route('tickets.show', $row->tkt_id).'#replies" class="inline-flex items-center px-3 py-1.5 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-2">Reply</a>';
+
+            // Add Reopen button if ticket is closed
+            if ($row->is_closed && $user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin'])) {
+                $btn .= ' <form action="'.route('tickets.reopen', $row->tkt_id).'" method="POST" class="inline ml-2">
+                            '.csrf_field().'
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">Reopen</button>
+                        </form>';
+            }
+            
+            return $btn;
+        })
                 ->filterColumn('title', function($query, $keyword) {
                     $query->where('title', 'like', "%{$keyword}%");
                 })
@@ -119,6 +119,30 @@ class TicketController extends Controller
 
         return view('tickets.index');
     }
+
+    public function create()
+{
+    // Get all necessary data for the form
+    $priorities = Priority::all();
+    $ticketTypes = TicketType::all();
+    $locations = Location::all();
+    $assets = Asset::all();
+    $assemblies = Assembly::all();
+    
+    // Get users who can be assigned tickets (admins only)
+    $users = User::whereHas('roles', function($q) {
+        $q->whereIn('slug', ['hw-admin', 'hw-subadmin', 'superadmin']);
+    })->get();
+    
+    return view('tickets.create', compact(
+        'priorities',
+        'ticketTypes',
+        'locations',
+        'assets',
+        'assemblies',
+        'users'
+    ));
+}
 
     public function store(Request $request)
     {
@@ -180,8 +204,9 @@ class TicketController extends Controller
         return redirect()->route('tickets.index')->with('success', 'Ticket created successfully.');
     }
 
-    public function show(Ticket $ticket)
+    public function show($tkt_id)
     {
+        $ticket = Ticket::findOrFail($tkt_id);
         // Check access
         $user = auth()->user();
         if (!$user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin']) && $ticket->created_by != $user->id) {
@@ -210,8 +235,113 @@ class TicketController extends Controller
         return view('tickets.show', compact('ticket'));
     }
 
-    public function reopen(Ticket $ticket)
+public function edit($tkt_id)
+{
+    $ticket = Ticket::findOrFail($tkt_id);
+    // Check access
+    $user = auth()->user();
+    if (!$user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin']) && $ticket->created_by != $user->id) {
+        abort(403, 'Unauthorized access to edit this ticket.');
+    }
+
+    // Get all necessary data for the form
+    $priorities = Priority::all();
+    $ticketTypes = TicketType::all();
+    $ticketStatuses = TicketStatus::all();
+    $locations = Location::all();
+    $assets = Asset::all();
+    $assemblies = Assembly::all();
+    
+    // Get users who can be assigned tickets (admins only)
+    $users = User::whereHas('roles', function($q) {
+        $q->whereIn('slug', ['hw-admin', 'hw-subadmin', 'superadmin']);
+    })->get();
+    
+    return view('tickets.edit', compact(
+        'ticket',
+        'priorities',
+        'ticketTypes',
+        'ticketStatuses',
+        'locations',
+        'assets',
+        'assemblies',
+        'users'
+    ));
+}
+
+public function update(Request $request, $tkt_id)
+{
+    $ticket = Ticket::findOrFail($tkt_id);
+    // Check access
+    $user = auth()->user();
+    if (!$user->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin']) && $ticket->created_by != $user->id) {
+        abort(403, 'Unauthorized access to edit this ticket.');
+    }
+
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'priority_id' => 'required|exists:priorities,id',
+        'ticket_type_id' => 'required|exists:0_tkt_types,type_id',
+        'status_id' => 'required|exists:0_tkt_status,id',
+        'assigned_to' => 'nullable|exists:0_users,id',
+        'seeker_name' => 'required|string|max:255',
+        'due_date' => 'required|date',
+        'location_id' => 'required|exists:0_seva_locations,loc_code',
+        'asset_id' => 'nullable|exists:0_hw_assets,asset_id',
+        'assembly_id' => 'nullable|exists:0_hw_assembly,assembly_id',
+        'expected_time_hours' => 'nullable|integer|min:0',
+        'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:5120',
+    ]);
+
+    $oldAssignedTo = $ticket->assign_id;
+
+    $ticket->update([
+        'title' => $validated['title'],
+        'description' => $validated['description'],
+        'seeker_name' => $validated['seeker_name'],
+        'priority_id' => $validated['priority_id'],
+        'type_id' => $validated['ticket_type_id'],
+        'status_id' => $validated['status_id'],
+        'assign_id' => $validated['assigned_to'] ?? null,
+        'due_date' => $validated['due_date'],
+        'expected_time_hours' => $validated['expected_time_hours'] ?? null,
+        'modified_by' => Auth::id(),
+        'loc_code' => $validated['location_id'],
+        'asset_id' => $validated['asset_id'] ?? null,
+        'assembly_id' => $validated['assembly_id'] ?? null,
+    ]);
+
+    // Handle file uploads
+    if ($request->hasFile('attachments')) {
+        foreach ($request->file('attachments') as $file) {
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('ticket_attachments', $filename, 'public');
+            
+            TicketAttachment::create([
+                'ticket_id' => $ticket->tkt_id,
+                'filename' => $filename,
+                'original_filename' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'path' => $path,
+                'uploaded_by' => Auth::id(),
+            ]);
+        }
+    }
+
+    // Send notification if assigned to someone new
+    if ($oldAssignedTo != $ticket->assign_id && $ticket->assign_id) {
+        $this->sendNotification($ticket, 'ticket_assigned');
+    }
+
+    return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket updated successfully.');
+}
+
+
+    public function reopen($tkt_id)
     {
+        $ticket = Ticket::findOrFail($tkt_id);
         // Only hw-admin, hw-subadmin, or superadmin can reopen tickets
         if (!auth()->user()->hasAnyRole(['hw-admin', 'hw-subadmin', 'superadmin'])) {
             abort(403, 'Unauthorized action.');
