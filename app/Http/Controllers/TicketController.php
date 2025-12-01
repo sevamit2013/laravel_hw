@@ -335,7 +335,11 @@ public function update(Request $request, $tkt_id)
         $this->sendNotification($ticket, 'ticket_assigned');
     }
 
-    return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket updated successfully.');
+  // Go back to tickets list
+return redirect()->route('tickets.index')->with('success', 'Ticket updated successfully.');
+
+// Stay on edit page with success message
+return redirect()->back()->with('success', 'Ticket updated successfully.');
 }
 
 
