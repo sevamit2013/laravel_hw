@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" action="{{ route('tickets.update', ['tkt_id' => $ticket->tkt_id]) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('tickets.update', $ticket->tkt_id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -29,7 +29,7 @@
                                 <x-input-label for="ticket_type_id" :value="__('Ticket Type')" />
                                 <select name="ticket_type_id" id="ticket_type_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     @foreach($ticketTypes as $ticketType)
-                                        <option value="{{ $ticketType->id }}" {{ $ticket->ticket_type_id == $ticketType->id ? 'selected' : '' }}>{{ $ticketType->name }}</option>
+                                        <option value="{{ $ticketType->type_id }}" {{ $ticket->type_id == $ticketType->type_id ? 'selected' : '' }}>{{ $ticketType->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -38,15 +38,15 @@
                                 <select name="assigned_to" id="assigned_to" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ $ticket->assigned_to == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                        <option value="{{ $user->id }}" {{ $ticket->assign_id == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <x-input-label for="ticket_status_id" :value="__('Status')" />
-                                <select name="ticket_status_id" id="ticket_status_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <x-input-label for="status_id" :value="__('Status')" />
+                                <select name="status_id" id="status_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     @foreach($ticketStatuses as $status)
-                                        <option value="{{ $status->id }}" {{ $ticket->ticket_status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                                        <option value="{{ $status->id }}" {{ $ticket->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -60,13 +60,13 @@
                             </div>
                             <div>
                                 <x-input-label for="due_date" :value="__('Due Date')" />
-                                <x-text-input id="due_date" class="block mt-1 w-full" type="date" name="due_date" :value="old('due_date', $ticket->due_date)" required />
+                                <x-text-input id="due_date" class="block mt-1 w-full" type="date" name="due_date" :value="old('due_date', $ticket->due_date->format('Y-m-d'))" required />
                             </div>
                             <div>
                                 <x-input-label for="location_id" :value="__('Location')" />
                                 <select name="location_id" id="location_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     @foreach($locations as $location)
-                                        <option value="{{ $location->id }}" {{ $ticket->location_id == $location->id ? 'selected' : '' }}>{{ $location->location_name }}</option>
+                                        <option value="{{ $location->loc_code }}" {{ $ticket->loc_code == $location->loc_code ? 'selected' : '' }}>{{ $location->location_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -75,7 +75,7 @@
                                 <select name="asset_id" id="asset_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach($assets as $asset)
-                                        <option value="{{ $asset->id }}" {{ $ticket->asset_id == $asset->id ? 'selected' : '' }}>{{ $asset->asset_code }}</option>
+                                        <option value="{{ $asset->asset_id }}" {{ $ticket->asset_id == $asset->asset_id ? 'selected' : '' }}>{{ $asset->asset_code }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -84,18 +84,17 @@
                                 <select name="assembly_id" id="assembly_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach($assemblies as $assembly)
-                                        <option value="{{ $assembly->id }}" {{ $ticket->assembly_id == $assembly->id ? 'selected' : '' }}>{{ $assembly->description }}</option>
+                                        <option value="{{ $assembly->assembly_id }}" {{ $ticket->assembly_id == $assembly->assembly_id ? 'selected' : '' }}>{{ $assembly->description }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ml-4">
-                                {{ __('Update') }}
+                            <x-primary-button>
+                                {{ __('Update Ticket') }}
                             </x-primary-button>
                         </div>
-                    <button type="submit">Update Ticket</button>
                     </form>
                 </div>
             </div>

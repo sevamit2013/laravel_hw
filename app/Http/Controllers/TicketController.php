@@ -151,6 +151,7 @@ class TicketController extends Controller
             'description' => 'required|string',
             'priority_id' => 'required|exists:priorities,id',
             'ticket_type_id' => 'required|exists:0_tkt_types,type_id',
+            'status_id' => 'required|exists:ticket_statuses,id',
             'assigned_to' => 'nullable|exists:0_users,id',
             'seeker_name' => 'required|string|max:255',
             'due_date' => 'required|date',
@@ -256,8 +257,8 @@ public function edit($tkt_id)
     $users = User::whereHas('roles', function($q) {
         $q->whereIn('slug', ['hw-admin', 'hw-subadmin', 'superadmin']);
     })->get();
-    
-    return view('tickets.edit', compact(
+
+     return view('tickets.edit', compact(
         'ticket',
         'priorities',
         'ticketTypes',
@@ -283,7 +284,7 @@ public function update(Request $request, $tkt_id)
         'description' => 'required|string',
         'priority_id' => 'required|exists:priorities,id',
         'ticket_type_id' => 'required|exists:0_tkt_types,type_id',
-        'status_id' => 'required|exists:0_tkt_status,id',
+        'status_id' => 'required|exists:ticket_statuses,id',
         'assigned_to' => 'nullable|exists:0_users,id',
         'seeker_name' => 'required|string|max:255',
         'due_date' => 'required|date',

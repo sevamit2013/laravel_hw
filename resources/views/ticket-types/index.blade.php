@@ -29,22 +29,24 @@
         </div>
     </div>
 
-    @push('scripts')
-
-    <script>
-        $(function() {
-            $('#ticket-types-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{!! route('ticket-types.index') !!}',
-                columns: [
-                    { data: 'id', name: 'id' },
-                    { data: 'name', name: 'name' },
-                    { data: 'inactive', name: 'inactive' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
-                ]
-            });
+   @push('scripts')
+<script>
+    $(function() {
+        $('#ticket-types-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{!! route('ticket-types.index') !!}',
+            columns: [
+                { data: 'type_id', name: 'type_id' },
+                { data: 'name', name: 'name' },
+                { data: 'inactive', name: 'inactive', render: function(data) {
+                    return data ? '<span class="text-red-600">Inactive</span>' : '<span class="text-green-600">Active</span>';
+                }},
+                { data: 'action', name: 'action', orderable: false, searchable: false }
+            ],
+            order: [[0, 'asc']]  // Order by type_id
         });
-    </script>
-    @endpush
+    });
+</script>
+@endpush
 </x-app-layout>

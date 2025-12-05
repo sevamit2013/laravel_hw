@@ -15,6 +15,8 @@ class Asset extends Model implements Auditable // Implement Auditable Contract
     protected $table = '0_hw_assets';
     protected $primaryKey = 'asset_id';
     public $timestamps = false;
+     public $incrementing = true;          // or false if not auto-increment
+    protected $keyType = 'int';   
 
     protected $fillable = [
         'asset_code',
@@ -56,6 +58,11 @@ class Asset extends Model implements Auditable // Implement Auditable Contract
         return $this->belongsTo(User::class, 'user', 'id');
     }
 
+      public function assignedUser()
+    {
+        return $this->belongsTo(User::class, 'user', 'id');
+    }
+
     public function assembly()
     {
         return $this->belongsTo(Assembly::class, 'assembly_id', 'assembly_id');
@@ -65,4 +72,9 @@ class Asset extends Model implements Auditable // Implement Auditable Contract
     {
         return $this->hasMany(Ticket::class);
     }
+
+    public function getRouteKeyName()
+{
+    return 'asset_id';
+}
 }

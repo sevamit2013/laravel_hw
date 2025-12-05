@@ -35,9 +35,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('ticket-types', TicketTypeController::class);
     Route::resource('locations', LocationController::class);
     Route::resource('assemblies', AssemblyController::class);
-    Route::resource('assets', AssetController::class);
-    Route::resource('asset-categories', AssetCategoryController::class);
-    Route::resource('asset-sub-categories', AssetSubCategoryController::class);
+    
+    Route::get('assets', [AssetController::class, 'index'])->name('assets.index');
+Route::get('assets/create', [AssetController::class, 'create'])->name('assets.create');
+Route::resource('asset-categories', AssetCategoryController::class);
+Route::resource('asset-sub-categories', AssetSubCategoryController::class);
+
+Route::post('assets', [AssetController::class, 'store'])->name('assets.store');
+Route::get('assets/{asset}', [AssetController::class, 'show'])->name('assets.show');
+Route::get('assets/{asset}/edit', [AssetController::class, 'edit'])->name('assets.edit');
+Route::put('assets/{asset}', [AssetController::class, 'update'])->name('assets.update');
+Route::delete('assets/{asset}', [AssetController::class, 'destroy'])->name('assets.destroy');
+
 
     // Ticket routes
     Route::get('tickets', [TicketController::class, 'index'])->name('tickets.index');
