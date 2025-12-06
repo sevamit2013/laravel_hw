@@ -99,6 +99,6 @@ class AssetCategoryController extends Controller
     public function destroy(AssetCategory $assetCategory)
     {
         $assetCategory->delete();
-        return redirect()->route('asset-categories.index ')->with('success', 'Asset category deleted successfully.');
+        return redirect()->route('asset-categories.index')->with('success', 'Asset category deleted successfully.');
     }
 }

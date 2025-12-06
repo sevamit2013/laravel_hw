@@ -24,7 +24,15 @@ class Location extends Model implements Auditable // Implement Auditable Contrac
         'inactive',
     ];
 
-    public function getRouteKeyName()
+    // Configure auditing to handle string primary key
+    public function transformAudit(array $data): array
+    {
+        // Cast the auditable_id to string for this model
+        $data['auditable_id'] = (string) $data['auditable_id'];
+        return $data;
+    }
+
+    public function getRouteKeyName(): string
     {
         return 'loc_code';
     }

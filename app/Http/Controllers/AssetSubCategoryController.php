@@ -22,8 +22,9 @@ class AssetSubCategoryController extends Controller
                     return $row->category->description;
                 })
                 ->addColumn('action', function($row){
-                    $btn = '<a href="'.route('asset-sub-categories.show', $row->sub_cat_id).'" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">View</a>';
-                    $btn .= ' <a href="'.route('asset-sub-categories.edit', $row->sub_cat_id).'" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">Edit</a>';
+                    // Pass the $row object (or its key) directly to the route helper
+                    $btn = '<a href="'.route('asset-sub-categories.show', $row).'" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">View</a>';
+                    $btn .= ' <a href="'.route('asset-sub-categories.edit', $row).'" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">Edit</a>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -39,6 +40,7 @@ class AssetSubCategoryController extends Controller
     public function create()
     {
         $assetCategories = AssetCategory::all();
+        // The variable $assetCategories is fine in camelCase
         return view('asset-sub-categories.create', compact('assetCategories'));
     }
 
@@ -68,7 +70,9 @@ class AssetSubCategoryController extends Controller
     public function show(AssetSubCategory $assetSubCategory)
     {
         $assetSubCategory->load('category');
-        return view('asset-sub-categories.show', compact('assetSubCategory'));
+        // 👇 CHANGED: Renamed variable to snake_case for consistency with common Blade practice
+        $asset_sub_category = $assetSubCategory; 
+        return view('asset-sub-categories.show', compact('asset_sub_category'));
     }
 
     /**
@@ -77,7 +81,9 @@ class AssetSubCategoryController extends Controller
     public function edit(AssetSubCategory $assetSubCategory)
     {
         $assetCategories = AssetCategory::all();
-        return view('asset-sub-categories.edit', compact('assetSubCategory', 'assetCategories'));
+        // 👇 CHANGED: Renamed variable to snake_case for consistency with common Blade practice
+        $asset_sub_category = $assetSubCategory; 
+        return view('asset-sub-categories.edit', compact('asset_sub_category', 'assetCategories'));
     }
 
     /**

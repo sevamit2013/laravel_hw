@@ -20,10 +20,10 @@
                     </div>
 
                     <div class="flex justify-end mt-6">
-                        <a href="{{ route('asset-categories.edit', $assetCategory->id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2">
+                        <a href="{{ route('asset-categories.edit', $assetCategory->category_id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2">
                             {{ __('Edit Asset Category') }}
                         </a>
-                        <form action="{{ route('asset-categories.destroy', $assetCategory->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this asset category?');">
+                        <form action="{{ route('asset-categories.destroy', $assetCategory) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this asset category?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">

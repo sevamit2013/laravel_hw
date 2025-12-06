@@ -229,7 +229,7 @@ class TicketController extends Controller
             'asset', 
             'assembly', 
             'replies.user',
-            'replies.attachments',
+           // 'replies.attachments',
             'attachments'
         ]);
         

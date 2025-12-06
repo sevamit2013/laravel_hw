@@ -21,16 +21,18 @@
                     </div>
 
                     <div class="flex justify-end mt-6">
-                        <a href="{{ route('locations.edit', $location->id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2">
+                       {{-- ✅ CORRECT: Pass the $location object --}}
+<a href="{{ route('locations.edit', $location) }}">Edit Location</a>
                             {{ __('Edit Location') }}
                         </a>
-                        <form action="{{ route('locations.destroy', $location->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this location?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                {{ __('Delete Location') }}
-                            </button>
-                        </form>
+                        {{-- ✅ CORRECT: Pass the $location object --}}
+<form method="POST" action="{{ route('locations.destroy', $location) }}" 
+    onsubmit="return confirm('Are you sure you want to delete this location?');">
+    @csrf
+    @method('DELETE')
+    
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
                     </div>
                 </div>
             </div>

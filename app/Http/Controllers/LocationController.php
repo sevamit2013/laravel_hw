@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Location;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
 
 class LocationController extends Controller
@@ -85,23 +86,41 @@ class LocationController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Location $location)
-    {
-        $request->validate([
-            'loc_code' => 'required|string|max:255|unique:0_seva_locations,loc_code,' . $location->loc_code,
-            'location_name' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:0_seva_locations,loc_code',
-            'inactive' => 'boolean',
-        ]);
+{
+    // We don't really want to change loc_code (it's the primary key like ROOT),
+    // so we only validate it for presence + uniqueness against other rows.
+    $validated = $request->validate([
+        'loc_code' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('0_seva_locations', 'loc_code')
+                ->ignore($location->loc_code, 'loc_code'), // <-- IMPORTANT: ignore by loc_code, not id
+        ],
+        'location_name' => ['required', 'string', 'max:255'],
+        'parent_id'     => ['nullable'],   // you can tighten this later if needed
+        'inactive'      => ['nullable'],
+    ]);
 
-        $location->update([
-            'loc_code' => $request->loc_code,
-            'location_name' => $request->location_name,
-            'parent_id' => $request->parent_id,
-            'inactive' => $request->has('inactive'),
-        ]);
+    // Since loc_code is PK and we made it readonly in the form, you can choose:
+    // (A) keep existing loc_code and not update it:
+    // $location->loc_code stays as is
+    //
+    // or (B) allow changing it by uncommenting the line below.
+    // For safety, I'll keep it unchanged here.
 
-        return redirect()->route('locations.index')->with('success', 'Location updated successfully.');
-    }
+    $location->update([
+        // 'loc_code'      => $validated['loc_code'], // <-- enable if you really want to allow changing it
+        'location_name' => $validated['location_name'],
+        'parent_id'     => $validated['parent_id'] ?? null,
+        'inactive'      => $request->boolean('inactive'),
+    ]);
+
+    return redirect()
+        ->route('locations.index')
+        ->with('success', 'Location updated successfully.');
+}
+
 
     /**
      * Remove the specified resource from storage.

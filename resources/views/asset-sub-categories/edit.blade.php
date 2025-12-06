@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
 
-                    <form action="{{ route('asset-sub-categories.update', $assetSubCategory) }}" method="POST">
+                    <form action="{{ route('asset-sub-categories.update', $asset_sub_category) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -26,7 +26,7 @@
                                     <option value="">{{ __('Select Category') }}</option>
                                     @foreach ($assetCategories as $category)
                                         <option value="{{ $category->category_id }}"
-                                            {{ old('asset_category_id', $assetSubCategory->asset_category_id) == $category->category_id ? 'selected' : '' }}>
+                                            {{ old('asset_category_id', $asset_sub_category->asset_category_id) == $category->category_id ? 'selected' : '' }}>
                                             {{ $category->description }}
                                         </option>
                                     @endforeach
@@ -42,7 +42,7 @@
                                     class="block mt-1 w-full"
                                     type="text"
                                     name="description"
-                                    :value="old('description', $assetSubCategory->description)"
+                                    :value="old('description', $asset_sub_category->description)"
                                     required
                                 />
                                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
@@ -56,7 +56,7 @@
                                     id="inactive"
                                     value="1"
                                     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                                    {{ old('inactive', $assetSubCategory->inactive) ? 'checked' : '' }}
+                                    {{ old('inactive', $asset_sub_category->inactive) ? 'checked' : '' }}
                                 >
                                 <x-input-label for="inactive" :value="__('Inactive')" class="ml-2" />
                             </div>

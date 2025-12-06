@@ -208,18 +208,20 @@
                                 </div>
                                 <div class="ml-13 text-sm text-gray-700 whitespace-pre-wrap">{{ $reply->description }}</div>
                                 
-                                @if($reply->attachments->count() > 0)
-                                    <div class="ml-13 mt-3 flex flex-wrap gap-2">
-                                        @foreach($reply->attachments as $attachment)
-                                            <a href="{{ $attachment->url }}" target="_blank" class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-xs text-gray-700 hover:bg-gray-50">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"/>
-                                                </svg>
-                                                {{ $attachment->original_filename }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                @endif
+                                {{-- Reply attachments not supported yet - database doesn't have reply_id column
+@if($reply->attachments->count() > 0)
+    <div class="ml-13 mt-3 flex flex-wrap gap-2">
+        @foreach($reply->attachments as $attachment)
+            <a href="{{ $attachment->url }}" target="_blank" class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-xs text-gray-700 hover:bg-gray-50">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"/>
+                </svg>
+                {{ $attachment->original_filename }}
+            </a>
+        @endforeach
+    </div>
+@endif
+--}}
                             </div>
                         @empty
                             <div class="text-center py-8">
